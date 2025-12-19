@@ -1,0 +1,27 @@
+Лабораторная работа 3. Ответы на вопросы о "aha moment"
+
+1. Какой формат имеют входные данные, которые подаются модели? Приведите пример.
+
+Входные данные следуют формату шаблона чата с ролями system, user и assistant. Модель получает промпты, которые включают:
+- Системное сообщение: "You are a helpful assistant. You first thinks about the reasoning process in the mind and then provides the user with the answer."
+- Сообщение пользователя: Содержит задачу countdown с использованием чисел и целевого значения
+- Начало ответа ассистента: "Let me solve this step by step.\n
+Пример из датасета: {'target': 66, 'nums': [91, 2, 50], 'prompt': '<|system|>\nYou are a helpful assistant. You first thinks about the reasoning process in the mind and then provides the user with the answer.<|user|>\nUsing the numbers [91, 2, 50], create an equation that equals 66. You can use basic arithmetic operations (+, -, *, /) and each number can only be used once. Show your work in <think></think> tags. And return the final equation and answer in <answer> </answer> tags, for example <answer> (1 + 2) / 3 = 1 </answer>.<|assistant|>\nLet me solve this step by step.\n<think>'}
+
+2. Какие используются reward-функции?
+
+В ноутбуке реализованы две функции вознаграждения:
+1. format_reward_func: Проверяет, следует ли завершение правильному формату с тегами <think> и <answer>...</answer>.
+2. equation_reward_func: Оценивает математическую правильность ответа, проверяя, использует ли уравнение все требуемые числа ровно один раз и дает ли оно целевой результат.
+
+3. Какая используется функция потерь?
+
+Модель использует функцию потерь GRPO (Group Relative Policy Optimization). Это реализуется через GRPOTrainer из библиотеки TRL, который применяет методы градиентного подъема политики с указанными функциями вознаграждения для оптимизации ответов модели.
+
+4. Что такое "aha moment"?
+
+"Aha moment" (момент озарения) относится к прорыву в обучении ИИ-моделей, когда модель учится выполнять сложные рассуждения, сначала продумывая проблемы пошагово внутри себя (в тегах <think>) перед тем, как выдать окончательный ответ. Этот подход имитирует человеческое решение проблем, при котором человек сначала рассматривает процесс рассуждения, а затем приходит к выводу. В контексте этого ноутбука речь идет об обучении модели решать математические головоломки, показывая свой процесс мышления перед тем, как давать окончательный ответ в тегах <answer>.
+
+5. Как в коде происходит запись сгенерированного ответа в лог-файл completion_samples.txt?
+
+В функции format_reward_func есть механизм, который случайным образом выбирает 10% завершений (управляемый условием random.random() < 0.1) для сохранения в лог-файл. Когда это условие выполняется, код создает каталог "completion_samples", если он не существует, а затем добавляет текст завершения в "completion_samples/completion_samples.txt" с разделителем между записями.<|endoftext|>
